@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "id": 1769023440693,
+      "type": "lost",
+      "name": "wallet",
+      "description": "it is black in colour and has sticker on it",
+      "location": "library",
+      "date": "2026-01-14",
+      "color": "black",
+      "brand": "dont know",
+      "identifiers": "looks thin and sticker at corner",
+      "status": "claimed"
+    },
+    {
+      "id": 1769023546354,
+      "type": "lost",
+      "name": "wallet",
+      "description": "it is black in colour and has sticker on it",
+      "location": "library",
+      "date": "2026-01-14",
+      "color": "black",
+      "brand": "lacoster",
+      "identifiers": "looks thin and sticker at corner",
+      "status": "claimed"
+    }
+  ]
+}
