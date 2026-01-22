@@ -22,7 +22,9 @@ app.get("/items", (req, res) => {
 
 app.post("/items", (req, res) => {
   const data = JSON.parse(fs.readFileSync(dataPath))
+
   data.items.push(req.body)
+
   fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
   res.json({ success: true })
 })
@@ -30,13 +32,16 @@ app.post("/items", (req, res) => {
 app.put("/items/:id", (req, res) => {
   const data = JSON.parse(fs.readFileSync(dataPath))
   const index = data.items.findIndex(i => i.id == req.params.id)
-  if (index !== -1) {
-    data.items[index].status = "claimed"
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
+
+  if (index === -1) {
+    return res.status(404).json({ error: "Item not found" })
   }
+
+  data.items[index] = req.body
+
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
   res.json({ success: true })
 })
-
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running at http://localhost:${PORT}`)
 })
