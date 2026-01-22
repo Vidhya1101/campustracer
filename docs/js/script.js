@@ -44,6 +44,17 @@ function renderItems(filter) {
       <small>${item.date}</small>
 
       ${
+        item.status === "claimed" && item.finderContact
+          ? `<div class="contact">
+              <strong>Finder Contact</strong><br>
+              ${item.finderContact.name}<br>
+              ${item.finderContact.phone}<br>
+              ${item.finderContact.email || ""}
+            </div>`
+          : ""
+      }
+
+      ${
         item.status === "unclaimed"
           ? `<a href="claim.html?id=${item.id}" class="claim-btn">Verify & Claim</a>`
           : ""
@@ -70,6 +81,7 @@ function extractKeywords(text) {
 }
 
 function keywordOverlap(a, b) {
+  if (!a || !b) return false
   const x = extractKeywords(a)
   const y = extractKeywords(b)
   return x.some(w => y.includes(w))
@@ -95,16 +107,32 @@ async function submitClaim(event) {
   const userIdentifiers = document.getElementById("identifiers").value
   const userLocation = document.getElementById("location").value
 
+  const claimerName = document.getElementById("claimerName").value
+  const claimerPhone = document.getElementById("claimerPhone").value
+  const claimerEmail = document.getElementById("claimerEmail").value
+
   let score = 0
 
   if (keywordOverlap(foundItem.color, userColor)) score += 2
   if (keywordOverlap(foundItem.identifiers, userIdentifiers)) score += 2
   if (keywordOverlap(foundItem.location, userLocation)) score += 1
-  if (keywordOverlap(foundItem.brand || "", userBrand)) score += 1
+  if (keywordOverlap(foundItem.brand, userBrand)) score += 1
 
   if (score >= 3) {
-    await fetch(`${API}/${itemId}`, { method: "PUT" })
-    alert("Verification successful. Item claimed.")
+    foundItem.status = "claimed"
+    foundItem.claimerContact = {
+      name: claimerName,
+      phone: claimerPhone,
+      email: claimerEmail
+    }
+
+    await fetch(`${API}/${itemId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(foundItem)
+    })
+
+    alert("Verification successful. Contact details unlocked.")
     window.location.href = "browse.html"
   } else {
     alert("Verification failed. Details do not match.")
@@ -121,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lostForm.addEventListener("submit", async e => {
       e.preventDefault()
 
-      const inputs = lostForm.querySelectorAll("input, textarea, select")
+      const inputs = lostForm.querySelectorAll("input, textarea")
 
       const item = {
         id: generateId(),
@@ -150,7 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     foundForm.addEventListener("submit", async e => {
       e.preventDefault()
 
-      const inputs = foundForm.querySelectorAll("input, textarea, select")
+      const inputs = foundForm.querySelectorAll("input, textarea")
 
       const item = {
         id: generateId(),
@@ -162,6 +190,11 @@ document.addEventListener("DOMContentLoaded", () => {
         color: inputs[4].value,
         brand: inputs[5].value,
         identifiers: inputs[6].value,
+        finderContact: {
+          name: inputs[7].value,
+          phone: inputs[8].value,
+          email: inputs[9].value
+        },
         status: "unclaimed"
       }
 
