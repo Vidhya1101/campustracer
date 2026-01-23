@@ -186,41 +186,47 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (foundForm) {
-    foundForm.addEventListener("submit", async e => {
-      e.preventDefault();
+ if (foundForm) {
+  foundForm.addEventListener("submit", async e => {
+    e.preventDefault();
 
-      const validImages = selectedImages.filter(Boolean);
-      if (validImages.length === 0) {
-        alert("Please upload at least one image.");
-        return;
-      }
+    const validImages = selectedImages.filter(Boolean);
+    if (validImages.length === 0) {
+      alert("Please upload at least one image.");
+      return;
+    }
 
-      const inputs = foundForm.querySelectorAll("input, textarea");
+    const inputs = foundForm.querySelectorAll("input, textarea");
 
-      const item = {
-        id: generateId(),
-        type: "found",
-        name: inputs[0].value,
-        description: inputs[1].value,
-        location: inputs[2].value,
-        date: inputs[3].value,
-        color: inputs[4].value,
-        brand: inputs[5].value,
-        identifiers: inputs[6].value,
-        images: validImages,
-        status: "unclaimed"
-      };
+    const item = {
+      id: generateId(),
+      type: "found",
+      name: inputs[0].value,
+      description: inputs[1].value,
+      location: inputs[2].value,
+      date: inputs[3].value,
+      color: inputs[4].value,
+      brand: inputs[5].value,
+      identifiers: inputs[6].value,
 
-      await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item)
-      });
+      finderName: inputs[7].value,
+      finderPhone: inputs[8].value,
+      finderEmail: inputs[9].value,
 
-      window.location.href = "browse.html";
+      images: validImages,
+      status: "unclaimed"
+    };
+
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item)
     });
-  }
+
+    window.location.href = "browse.html";
+  });
+}
+
 
   if (claimForm) {
     claimForm.addEventListener("submit", submitClaim);
