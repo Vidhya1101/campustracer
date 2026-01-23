@@ -1,42 +1,48 @@
-const API = "https://campustracer.onrender.com/items";
-let allItems = [];
+const API = "https://campustracer.onrender.com/items"
 
-let selectedImages = [];
-let activeImageBox = null;
+let allItems = []
 
 function generateId() {
-  return Date.now();
+  return Date.now()
+}
+
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
 }
 
 async function loadItems() {
-  const res = await fetch(API);
-  allItems = await res.json();
-  renderItems("all");
+  const container = document.getElementById("items")
+  if (!container) return
+
+  const res = await fetch(API)
+  allItems = await res.json()
+  renderItems("all")
 }
 
 function renderItems(filter) {
-  const container = document.getElementById("items");
-  if (!container) return;
+  const container = document.getElementById("items")
+  if (!container) return
 
-  container.innerHTML = "";
+  container.innerHTML = ""
 
-  let items =
-    filter === "all"
-      ? allItems
-      : allItems.filter(
-          i =>
-            (filter === "claimed" && i.status === "claimed") ||
-            (filter === "unclaimed" && i.status === "unclaimed") ||
-            i.type === filter
-        );
+  let items = allItems
+
+  if (filter !== "all") {
+    items = items.filter(i =>
+      filter === "unclaimed" ? i.status === "unclaimed" :
+      filter === "claimed" ? i.status === "claimed" :
+      i.type === filter
+    )
+  }
 
   items.forEach(item => {
-    const card = document.createElement("div");
-    card.className = "item-card";
-
-    const imagesHTML = item.images
-      ? item.images.map(img => `<img src="${img}" class="item-img">`).join("")
-      : "";
+    const card = document.createElement("div")
+    card.className = "item-card"
 
     card.innerHTML = `
       <div class="item-top">
@@ -44,105 +50,133 @@ function renderItems(filter) {
         ${item.status === "claimed" ? `<span class="badge claimed">CLAIMED</span>` : ""}
       </div>
 
+      ${item.image ? `<img src="${item.image}" class="item-img">` : ""}
+
       <h3>${item.name}</h3>
       <p>${item.description}</p>
       <p class="location">${item.location}</p>
       <small>${item.date}</small>
 
-      <div class="img-row">${imagesHTML}</div>
-
       ${
-        item.status === "unclaimed"
+        item.type === "found" && item.status === "unclaimed"
           ? `<a href="claim.html?id=${item.id}" class="claim-btn">Verify & Claim</a>`
           : ""
       }
-    `;
-
-    container.appendChild(card);
-  });
+    `
+    container.appendChild(card)
+  })
 }
 
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".filter").forEach(b => b.classList.remove("active"))
+    btn.classList.add("active")
+    renderItems(btn.dataset.filter)
+  }
+})
+
 document.addEventListener("DOMContentLoaded", () => {
-  const foundForm = document.getElementById("foundForm");
-  const lostForm = document.getElementById("lostForm");
-  const claimForm = document.getElementById("claimForm");
 
-  const imageInput = document.getElementById("imageInput");
-  const imageBoxes = document.querySelectorAll(".image-box");
+  const lostForm = document.getElementById("lostForm")
+  const foundForm = document.getElementById("foundForm")
+  const claimForm = document.getElementById("claimForm")
 
-  if (imageInput && imageBoxes.length) {
-    imageBoxes.forEach(box => {
-      box.addEventListener("click", () => {
-        activeImageBox = box;
-        imageInput.click();
-      });
-    });
+  if (lostForm) {
+    lostForm.addEventListener("submit", async e => {
+      e.preventDefault()
+      const f = e.target
 
-    imageInput.addEventListener("change", () => {
-      const file = imageInput.files[0];
-      if (!file || !activeImageBox) return;
+      const item = {
+        id: generateId(),
+        type: "lost",
+        name: f.querySelector("#name").value,
+        description: f.querySelector("#description").value,
+        location: f.querySelector("#location").value,
+        date: f.querySelector("#date").value,
+        color: f.querySelector("#color").value,
+        brand: f.querySelector("#brand").value,
+        identifiers: f.querySelector("#identifiers").value,
+        status: "unclaimed"
+      }
 
-      const index = activeImageBox.dataset.index;
-      const reader = new FileReader();
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item)
+      })
 
-      reader.onload = () => {
-        selectedImages[index] = reader.result;
-        activeImageBox.innerHTML = `<img src="${reader.result}">`;
-        activeImageBox.classList.add("filled");
-      };
-
-      reader.readAsDataURL(file);
-      imageInput.value = "";
-    });
+      if (res.ok) window.location.href = "browse.html"
+      else alert("Lost item not registered")
+    })
   }
 
   if (foundForm) {
     foundForm.addEventListener("submit", async e => {
-      e.preventDefault();
+      e.preventDefault()
+      const f = e.target
 
-      const validImages = selectedImages.filter(Boolean);
-      if (validImages.length === 0) {
-        alert("Please upload at least one image.");
-        return;
-      }
+      const imageFile = f.querySelector("#itemImage").files[0]
+      if (!imageFile) return alert("Image required")
 
-      const inputs = foundForm.querySelectorAll("input, textarea");
+      const image = await readImage(imageFile)
 
       const item = {
         id: generateId(),
         type: "found",
-        name: inputs[0].value,
-        description: inputs[1].value,
-        location: inputs[2].value,
-        date: inputs[3].value,
-        color: inputs[4].value,
-        brand: inputs[5].value,
-        identifiers: inputs[6].value,
-
-        finderName: inputs[7].value,
-        finderPhone: inputs[8].value,
-        finderEmail: inputs[9].value,
-
-        images: validImages,
+        name: f.querySelector("#name").value,
+        description: f.querySelector("#description").value,
+        image: image,
+        location: f.querySelector("#location").value,
+        date: f.querySelector("#date").value,
+        color: f.querySelector("#color").value,
+        brand: f.querySelector("#brand").value,
+        identifiers: f.querySelector("#identifiers").value,
+        finderContact: {
+          name: f.querySelector("#finderName").value,
+          phone: f.querySelector("#finderPhone").value,
+          email: f.querySelector("#finderEmail").value
+        },
         status: "unclaimed"
-      };
+      }
 
-      await fetch(API, {
+      const res = await fetch(API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item)
-      });
+      })
 
-      window.location.href = "browse.html";
-    });
+      if (res.ok) {
+        window.location.href = "browse.html"
+      } else {
+        alert("Found item not registered")
+      }
+    })
   }
 
   if (claimForm) {
-    claimForm.addEventListener("submit", e => {
-      e.preventDefault();
-      alert("Claim logic already works 👍");
-    });
+    claimForm.addEventListener("submit", async e => {
+      e.preventDefault()
+
+      const params = new URLSearchParams(window.location.search)
+      const id = params.get("id")
+
+      const res = await fetch(API)
+      const items = await res.json()
+      const item = items.find(i => i.id == id)
+
+      if (!item) return alert("Item not found")
+
+      item.status = "claimed"
+
+      await fetch(`${API}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(item)
+      })
+
+      window.location.href = "browse.html"
+    })
   }
 
-  loadItems();
-});
+  loadItems()
+})
