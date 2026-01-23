@@ -41,19 +41,15 @@ function renderItems(filter) {
     card.innerHTML = `
       <div class="item-top">
         <span class="badge ${item.type}">${item.type.toUpperCase()}</span>
-        ${
-          item.status === "claimed"
-            ? `<span class="badge claimed">CLAIMED</span>`
-            : ""
-        }
+        ${item.status === "claimed" ? `<span class="badge claimed">CLAIMED</span>` : ""}
       </div>
+
+      <div class="img-row">${imagesHTML}</div>
 
       <h3>${item.name}</h3>
       <p>${item.description}</p>
       <p class="location">${item.location}</p>
       <small>${item.date}</small>
-
-      <div class="img-row">${imagesHTML}</div>
 
       ${
         item.status === "unclaimed"
@@ -76,9 +72,7 @@ function extractKeywords(text) {
 
 function keywordOverlap(a, b) {
   if (!a || !b) return false;
-  const x = extractKeywords(a);
-  const y = extractKeywords(b);
-  return x.some(w => y.includes(w));
+  return extractKeywords(a).some(w => extractKeywords(b).includes(w));
 }
 
 async function submitClaim(e) {
@@ -96,16 +90,11 @@ async function submitClaim(e) {
     return;
   }
 
-  const userColor = document.getElementById("color").value;
-  const userBrand = document.getElementById("brand").value;
-  const userIdentifiers = document.getElementById("identifiers").value;
-  const userLocation = document.getElementById("location").value;
-
   let score = 0;
-  if (keywordOverlap(foundItem.color, userColor)) score += 2;
-  if (keywordOverlap(foundItem.identifiers, userIdentifiers)) score += 2;
-  if (keywordOverlap(foundItem.location, userLocation)) score += 1;
-  if (keywordOverlap(foundItem.brand || "", userBrand)) score += 1;
+  if (keywordOverlap(foundItem.color, color.value)) score += 2;
+  if (keywordOverlap(foundItem.identifiers, identifiers.value)) score += 2;
+  if (keywordOverlap(foundItem.location, location.value)) score += 1;
+  if (keywordOverlap(foundItem.brand || "", brand.value)) score += 1;
 
   if (score >= 3) {
     foundItem.status = "claimed";
@@ -119,7 +108,7 @@ async function submitClaim(e) {
     alert("Verification successful. Contact details unlocked.");
     window.location.href = "browse.html";
   } else {
-    alert("Verification failed. Details do not match.");
+    alert("Verification failed.");
   }
 }
 
@@ -157,22 +146,32 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (lostForm) {
-    lostForm.addEventListener("submit", async e => {
+  if (foundForm) {
+    foundForm.addEventListener("submit", async e => {
       e.preventDefault();
 
-      const inputs = lostForm.querySelectorAll("input, textarea");
+      const images = selectedImages.filter(Boolean);
+      if (images.length === 0) {
+        alert("Please upload at least one image.");
+        return;
+      }
+
+      const i = foundForm.querySelectorAll("input, textarea");
 
       const item = {
         id: generateId(),
-        type: "lost",
-        name: inputs[0].value,
-        description: inputs[1].value,
-        location: inputs[2].value,
-        date: inputs[3].value,
-        color: inputs[4].value,
-        brand: inputs[5].value,
-        identifiers: inputs[6].value,
+        type: "found",
+        name: i[0].value,
+        description: i[1].value,
+        location: i[2].value,
+        date: i[3].value,
+        color: i[4].value,
+        brand: i[5].value,
+        identifiers: i[6].value,
+        finderName: i[7].value,
+        finderPhone: i[8].value,
+        finderEmail: i[9].value,
+        images: images,
         status: "unclaimed"
       };
 
@@ -186,47 +185,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
- if (foundForm) {
-  foundForm.addEventListener("submit", async e => {
-    e.preventDefault();
+  if (lostForm) {
+    lostForm.addEventListener("submit", async e => {
+      e.preventDefault();
+      const i = lostForm.querySelectorAll("input, textarea");
 
-    const validImages = selectedImages.filter(Boolean);
-    if (validImages.length === 0) {
-      alert("Please upload at least one image.");
-      return;
-    }
+      await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: generateId(),
+          type: "lost",
+          name: i[0].value,
+          description: i[1].value,
+          location: i[2].value,
+          date: i[3].value,
+          color: i[4].value,
+          brand: i[5].value,
+          identifiers: i[6].value,
+          status: "unclaimed"
+        })
+      });
 
-    const inputs = foundForm.querySelectorAll("input, textarea");
-
-    const item = {
-      id: generateId(),
-      type: "found",
-      name: inputs[0].value,
-      description: inputs[1].value,
-      location: inputs[2].value,
-      date: inputs[3].value,
-      color: inputs[4].value,
-      brand: inputs[5].value,
-      identifiers: inputs[6].value,
-
-      finderName: inputs[7].value,
-      finderPhone: inputs[8].value,
-      finderEmail: inputs[9].value,
-
-      images: validImages,
-      status: "unclaimed"
-    };
-
-    await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(item)
+      window.location.href = "browse.html";
     });
-
-    window.location.href = "browse.html";
-  });
-}
-
+  }
 
   if (claimForm) {
     claimForm.addEventListener("submit", submitClaim);
