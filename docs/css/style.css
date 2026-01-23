@@ -286,21 +286,26 @@ textarea {
 .image-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 12px;
   margin-top: 10px;
 }
 
 .image-box {
-  height: 80px;
-  border: 2px dashed #c7c7c7;
+  height: 90px;
+  border: 2px dashed #999;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
-  color: #777;
+  font-size: 30px;
+  color: #666;
   cursor: pointer;
   background: #fafafa;
+}
+
+.image-box:hover {
+  border-color: #4f46e5;
+  color: #4f46e5;
 }
 
 .image-box img {
@@ -308,8 +313,4 @@ textarea {
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-}
-
-.image-box.filled {
-  border: none;
 }
