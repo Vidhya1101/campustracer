@@ -18,30 +18,58 @@
 
   <div class="form-body">
     <label>Item Name</label>
-    <input type="text" required>
+    <input type="text" name="itemName" required>
 
     <label>Description</label>
-    <textarea required></textarea>
+    <textarea name="description" required></textarea>
 
     <div class="row">
       <div>
         <label>Location Found</label>
-        <input type="text" required>
+        <input type="text" name="location" required>
       </div>
       <div>
         <label>Date Found</label>
-        <input type="date" required>
+        <input type="date" name="date" required>
       </div>
     </div>
 
     <label>Primary Color</label>
-    <input type="text" required>
+    <input type="text" name="color" required>
 
     <label>Brand</label>
-    <input type="text">
+    <input type="text" name="brand">
 
     <label>Identifying Details</label>
-    <textarea required></textarea>
+    <textarea name="identifiers" required></textarea>
+
+    <label>Upload Item Images (Minimum 1, Max 4)</label>
+
+    <input
+      type="file"
+      id="imageInput"
+      accept="image/*"
+      capture="environment"
+      hidden
+    />
+
+    <div class="image-grid">
+      <div class="image-box" data-index="0">+</div>
+      <div class="image-box" data-index="1">+</div>
+      <div class="image-box" data-index="2">+</div>
+      <div class="image-box" data-index="3">+</div>
+    </div>
+
+    <h3>Finder Contact Details</h3>
+
+    <label>Your Name</label>
+    <input type="text" name="finderName" required>
+
+    <label>Phone Number</label>
+    <input type="text" name="finderPhone" required>
+
+    <label>Email</label>
+    <input type="email" name="finderEmail" required>
 
     <label>Upload Item Images (Minimum 1, Max 4)</label>
 
