@@ -58,6 +58,17 @@ function renderItems(filter) {
       <small>${item.date}</small>
 
       ${
+        item.status === "claimed" && item.finderContact
+          ? `<div class="contact">
+              <strong>Finder Contact Details</strong><br>
+              Name: ${item.finderContact.name}<br>
+              Phone: ${item.finderContact.phone}<br>
+              ${item.finderContact.email ? `Email: ${item.finderContact.email}` : ""}
+            </div>`
+          : ""
+      }
+
+      ${
         item.type === "found" && item.status === "unclaimed"
           ? `<a href="claim.html?id=${item.id}" class="claim-btn">Verify & Claim</a>`
           : ""
@@ -105,8 +116,11 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(item)
       })
 
-      if (res.ok) window.location.href = "browse.html"
-      else alert("Lost item not registered")
+      if (res.ok) {
+        window.location.href = "browse.html"
+      } else {
+        alert("Lost item not registered")
+      }
     })
   }
 
@@ -116,7 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const f = e.target
 
       const imageFile = f.querySelector("#itemImage").files[0]
-      if (!imageFile) return alert("Image required")
+      if (!imageFile) {
+        alert("Image required")
+        return
+      }
 
       const image = await readImage(imageFile)
 
@@ -125,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         type: "found",
         name: f.querySelector("#name").value,
         description: f.querySelector("#description").value,
-        image: image,
+        image,
         location: f.querySelector("#location").value,
         date: f.querySelector("#date").value,
         color: f.querySelector("#color").value,
@@ -164,16 +181,25 @@ document.addEventListener("DOMContentLoaded", () => {
       const items = await res.json()
       const item = items.find(i => i.id == id)
 
-      if (!item) return alert("Item not found")
+      if (!item) {
+        alert("Item not found")
+        return
+      }
 
       item.status = "claimed"
 
-      await fetch(`${API}/${id}`, {
+      const update = await fetch(`${API}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item)
       })
 
+      if (!update.ok) {
+        alert("Failed to claim item")
+        return
+      }
+
+      alert("Successfully claimed. Finder contact details unlocked.")
       window.location.href = "browse.html"
     })
   }
