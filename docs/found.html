@@ -42,16 +42,22 @@
 
     <label>Identifying Details</label>
     <textarea required></textarea>
-    <h3>Finder Contact Details</h3>
+    <label>Upload Item Images (Minimum 1, Max 4)</label>
 
-<label>Your Name</label>
-<input type="text" required>
+<input
+  type="file"
+  id="imageInput"
+  accept="image/*"
+  capture="environment"
+  hidden
+/>
 
-<label>Phone Number</label>
-<input type="text" required>
-
-<label>Email</label>
-<input type="email">
+<div class="image-grid">
+  <div class="image-box" data-index="0">+</div>
+  <div class="image-box" data-index="1">+</div>
+  <div class="image-box" data-index="2">+</div>
+  <div class="image-box" data-index="3">+</div>
+</div>
 
     <div class="actions">
       <a href="index.html" class="btn outline">Cancel</a>
