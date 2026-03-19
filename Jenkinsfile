@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Clone') {
             steps {
@@ -29,12 +30,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat 'cd backend && npm install'
-            }
-        }
-
-        stage('Install Selenium') {
-            steps {
-                bat 'cd backend && npm install selenium-webdriver'
+                bat 'cd backend && npm install selenium-webdriver chromedriver'
             }
         }
 
