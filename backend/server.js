@@ -15,6 +15,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type")
   next()
 })
+app.use(express.static(path.join(__dirname, "../docs")))
 
 app.get("/items", (req, res) => {
   const data = JSON.parse(fs.readFileSync(dataPath))
@@ -39,6 +40,10 @@ app.put("/items/:id", (req, res) => {
   res.json({ success: true })
 })
 
-app.listen(PORT, () => {
-  console.log("Server running on port", PORT)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../docs/index.html"))
+})
+
+app.listen(3000, '0.0.0.0', () => {
+  console.log("Server running on port 3000");
 })
