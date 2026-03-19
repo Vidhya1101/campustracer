@@ -1,8 +1,11 @@
 const { Builder, By } = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
 
 (async function fullTestSuite() {
-    let driver = await new Builder().forBrowser('chrome').build();
-
+let driver = await new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(new chrome.Options())
+    .build();
     try {
         // 1. LOST ITEM FLOW
         console.log("Running Lost Item Test...");
@@ -54,7 +57,7 @@ const { Builder, By } = require('selenium-webdriver');
         await driver.findElement(By.css("button[type='submit']")).click();
 
         await driver.sleep(2000);
-        console.log("✅ Found Item Test Passed");
+        console.log(" Found Item Test Passed");
 
         // 3. CLAIM ITEM FLOW
         console.log("Running Claim Item Test...");
