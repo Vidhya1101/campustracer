@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Clone') {
             steps {
@@ -23,7 +22,12 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                bat 'docker run -d -p 3000:3000 --name campustracer campustracer'
+                bat 'docker run -d -p 3001:3000 --name campustracer campustracer'
+            }
+        }
+        stage('Test') {
+            steps {
+                bat 'node test.js'
             }
         }
     }
