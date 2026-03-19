@@ -1,4 +1,4 @@
-const API = "https://campustracer.onrender.com/items"
+const API = "http://localhost:3001/items"
 
 let allItems = []
 
