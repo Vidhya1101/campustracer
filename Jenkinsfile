@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/Vidhya1101/campustracer.git'
+                git branch: 'main', url: 'https://github.com/Vidhya1101/campustracer.git'
             }
         }
 
