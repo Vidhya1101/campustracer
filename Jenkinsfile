@@ -19,20 +19,28 @@ pipeline {
                 bat 'docker rm campustracer || exit 0'
             }
         }
+
         stage('Run Container') {
             steps {
                 bat 'docker run -d -p 3001:3000 --name campustracer campustracer'
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
-                bat 'npm install selenium-webdriver chromedriver'
+                bat 'cd backend && npm install'
             }
         }
+
+        stage('Install Selenium') {
+            steps {
+                bat 'cd backend && npm install selenium-webdriver'
+            }
+        }
+
         stage('Test') {
             steps {
-                bat 'node test.js'
+                bat 'cd backend && node test.js'
             }
         }
     }
