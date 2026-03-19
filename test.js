@@ -10,7 +10,7 @@ let driver = await new Builder()
         // 1. LOST ITEM FLOW
         console.log("Running Lost Item Test...");
 
-        await driver.get('http://localhost:3000');
+        await driver.get('http://localhost:3001');
         await driver.sleep(2000);
 
         let buttons = await driver.findElements(By.linkText("Get Started"));
@@ -34,7 +34,7 @@ let driver = await new Builder()
         // 2. FOUND ITEM FLOW
         console.log("Running Found Item Test...");
 
-        await driver.get('http://localhost:3000');
+        await driver.get('http://localhost:3001');
         await driver.sleep(2000);
 
         let buttons2 = await driver.findElements(By.linkText("Get Started"));
@@ -62,7 +62,7 @@ let driver = await new Builder()
         // 3. CLAIM ITEM FLOW
         console.log("Running Claim Item Test...");
 
-        await driver.get('http://localhost:3000/claim.html');
+        await driver.get('http://localhost:3001/claim.html');
         await driver.sleep(2000);
 
         await driver.findElement(By.id("claimerName")).sendKeys("Vidhya");
