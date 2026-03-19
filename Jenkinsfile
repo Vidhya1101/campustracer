@@ -10,20 +10,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t campustracer .'
+                bat 'docker build -t campustracer .'
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                sh 'docker stop campustracer || true'
-                sh 'docker rm campustracer || true'
+                bat 'docker stop campustracer || exit 0'
+                bat 'docker rm campustracer || exit 0'
             }
         }
 
         stage('Run Container') {
             steps {
-                sh 'docker run -d -p 3000:3000 --name campustracer campustracer'
+                bat 'docker run -d -p 3000:3000 --name campustracer campustracer'
             }
         }
     }
