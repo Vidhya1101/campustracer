@@ -1,5 +1,4 @@
-const API = "http://localhost:3001/items"
-
+const API = "/items"
 let allItems = []
 
 function generateId() {
