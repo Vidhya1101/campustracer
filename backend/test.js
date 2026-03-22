@@ -28,8 +28,14 @@ const chrome = require('selenium-webdriver/chrome');
         await driver.findElement(By.id("name")).sendKeys("Laptop");
         await driver.findElement(By.id("description")).sendKeys("Black Dell laptop");
         await driver.findElement(By.id("location")).sendKeys("Library");
+<<<<<<< HEAD
         await driver.findElement(By.id("date")).sendKeys("2026-03-10");
         await driver.findElement(By.id("color")).sendKeys("Black");
+=======
+        await driver.executeScript(
+            "document.getElementById('date').value = '2026-03-10'"
+        ); await driver.findElement(By.id("color")).sendKeys("Black");
+>>>>>>> b331590 (final fixes)
         await driver.findElement(By.id("brand")).sendKeys("Dell");
         await driver.findElement(By.id("identifiers")).sendKeys("Sticker on back");
 
@@ -56,8 +62,14 @@ const chrome = require('selenium-webdriver/chrome');
 
 
         await driver.findElement(By.id("location")).sendKeys("Canteen");
+<<<<<<< HEAD
         await driver.findElement(By.id("date")).sendKeys("2026-03-18");
         await driver.findElement(By.id("color")).sendKeys("Blue");
+=======
+        await driver.executeScript(
+            "document.getElementById('date').value = '2026-03-18'"
+        ); await driver.findElement(By.id("color")).sendKeys("Blue");
+>>>>>>> b331590 (final fixes)
         await driver.findElement(By.id("brand")).sendKeys("Milton");
         await driver.findElement(By.id("identifiers")).sendKeys("Sticker on cap");
 

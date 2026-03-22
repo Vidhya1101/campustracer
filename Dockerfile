@@ -12,7 +12,11 @@ WORKDIR /app/backend
 RUN npm install
 
 # Expose port
+<<<<<<< HEAD
 EXPOSE 3000
+=======
+EXPOSE 3001
+>>>>>>> b331590 (final fixes)
 
 # Start server
 CMD ["node", "server.js"]

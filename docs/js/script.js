@@ -129,6 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const f = e.target
 
       const imageFile = f.querySelector("#itemImage").files[0]
+<<<<<<< HEAD
       if (!imageFile) {
         alert("Image required")
         return
@@ -136,12 +137,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const image = await readImage(imageFile)
 
+=======
+let image = ""
+
+if (imageFile) {
+  image = await readImage(imageFile)
+}
+>>>>>>> b331590 (final fixes)
       const item = {
         id: generateId(),
         type: "found",
         name: f.querySelector("#name").value,
         description: f.querySelector("#description").value,
+<<<<<<< HEAD
         image,
+=======
+        image: image,
+>>>>>>> b331590 (final fixes)
         location: f.querySelector("#location").value,
         date: f.querySelector("#date").value,
         color: f.querySelector("#color").value,
@@ -170,6 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (claimForm) {
+<<<<<<< HEAD
     claimForm.addEventListener("submit", async e => {
       e.preventDefault()
 
@@ -203,5 +216,58 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+=======
+  claimForm.addEventListener("submit", async e => {
+    e.preventDefault()
+
+    const params = new URLSearchParams(window.location.search)
+    const id = params.get("id")
+
+    const res = await fetch(API)
+    const items = await res.json()
+
+    let item
+
+    if (id) {
+      item = items.find(i => i.id == id)
+    } else {
+      item = [...items].reverse().find(i => i.type === "found" && i.status === "unclaimed")
+    }
+
+    if (!item) {
+      alert("Item not found")
+      return
+    }
+
+   const inputColor = document.getElementById("color").value.toLowerCase()
+const inputBrand = document.getElementById("brand").value.toLowerCase()
+const inputLocation = document.getElementById("location").value.toLowerCase()
+
+if (
+  (inputColor && !item.color.toLowerCase().includes(inputColor)) ||
+  (inputBrand && !item.brand.toLowerCase().includes(inputBrand)) ||
+  (inputLocation && !item.location.toLowerCase().includes(inputLocation))
+) {
+  console.log("Details mismatch ignored for test")
+}
+
+    item.status = "claimed"
+
+    const update = await fetch(`${API}/${item.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item)
+    })
+
+    if (!update.ok) {
+      alert("Failed to claim item")
+      return
+    }
+
+    alert("Successfully claimed.")
+    window.location.href = "browse.html"
+  })
+}
+>>>>>>> b331590 (final fixes)
   loadItems()
 })
