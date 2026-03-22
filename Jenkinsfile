@@ -23,7 +23,7 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                bat 'docker run -d -p 3001:3000 --name campustracer campustracer'
+                bat 'docker run -d -p 3001:3001 --name campustracer campustracer'
             }
         }
 

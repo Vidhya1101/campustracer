@@ -28,7 +28,9 @@ const chrome = require('selenium-webdriver/chrome');
         await driver.findElement(By.id("name")).sendKeys("Laptop");
         await driver.findElement(By.id("description")).sendKeys("Black Dell laptop");
         await driver.findElement(By.id("location")).sendKeys("Library");
-        await driver.findElement(By.id("date")).sendKeys("2026-03-10");
+        await driver.executeScript(
+            "document.getElementById('date').value = '2026-03-10'"
+        );
         await driver.findElement(By.id("color")).sendKeys("Black");
         await driver.findElement(By.id("brand")).sendKeys("Dell");
         await driver.findElement(By.id("identifiers")).sendKeys("Sticker on back");
@@ -54,9 +56,10 @@ const chrome = require('selenium-webdriver/chrome');
         await driver.findElement(By.id("name")).sendKeys("Water Bottle");
         await driver.findElement(By.id("description")).sendKeys("Blue bottle near canteen");
 
-
         await driver.findElement(By.id("location")).sendKeys("Canteen");
-        await driver.findElement(By.id("date")).sendKeys("2026-03-18");
+        await driver.executeScript(
+            "document.getElementById('date').value = '2026-03-18'"
+        );
         await driver.findElement(By.id("color")).sendKeys("Blue");
         await driver.findElement(By.id("brand")).sendKeys("Milton");
         await driver.findElement(By.id("identifiers")).sendKeys("Sticker on cap");

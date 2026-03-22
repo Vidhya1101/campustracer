@@ -54,7 +54,11 @@ function renderItems(filter) {
       <h3>${item.name}</h3>
       <p>${item.description}</p>
       <p class="location">${item.location}</p>
-      <small>${item.date}</small>
+      <small>${new Date(item.date).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })}</small>
 
       ${
         item.status === "claimed" && item.finderContact
@@ -129,19 +133,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const f = e.target
 
       const imageFile = f.querySelector("#itemImage").files[0]
-      if (!imageFile) {
-        alert("Image required")
-        return
-      }
+      let image = ""
 
-      const image = await readImage(imageFile)
+      if (imageFile) {
+        image = await readImage(imageFile)
+      }
 
       const item = {
         id: generateId(),
         type: "found",
         name: f.querySelector("#name").value,
         description: f.querySelector("#description").value,
-        image,
+        image: image,
         location: f.querySelector("#location").value,
         date: f.querySelector("#date").value,
         color: f.querySelector("#color").value,
@@ -178,7 +181,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const res = await fetch(API)
       const items = await res.json()
-      const item = items.find(i => i.id == id)
+
+      let item
+
+      if (id) {
+        item = items.find(i => i.id == id)
+      } else {
+        item = [...items].reverse().find(i => i.type === "found" && i.status === "unclaimed")
+      }
 
       if (!item) {
         alert("Item not found")
@@ -187,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       item.status = "claimed"
 
-      const update = await fetch(`${API}/${id}`, {
+      const update = await fetch(`${API}/${item.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(item)
