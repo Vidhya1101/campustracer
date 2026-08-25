@@ -60,6 +60,10 @@ Browse Available Items
 Submit Claim
   ↓
 Verify Item Details
+```
+
+---
+
 ## 🛠️ Technologies Used
 
 | Component | Technology |
@@ -112,6 +116,7 @@ Build Docker Image
 Run Docker Container
    ↓
 Application
+```
 
 ### 🐳 Docker
 
